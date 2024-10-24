@@ -41,7 +41,6 @@ function Register(){
                 <br></br>
                 <button className="register-button" onClick={()=>handleRegister()}>Register</button>
                 <p style={{marginLeft:"84px"}}>Already have an account? <a onClick={()=>navLogin()}>Login here</a></p>
-                {loading===true? (<h4 style={{marginLeft:"150px",fontWeight:"bold"}}>Loading...</h4>):(<h4></h4>)}
             </div>
             <div className='register-image-container'>
                 <img src="../src/assets/back-login.jpg" alt="No Image to Display" className="register-side-image"/>
