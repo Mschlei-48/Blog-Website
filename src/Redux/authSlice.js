@@ -70,7 +70,7 @@ const registerUser=async (dispatch,email,password,username,navigate)=>{
 
 
 
-const signInUser=((dispatch,email,password,username,navigate)=>{
+const signInUser=async(dispatch,email,password,username,navigate)=>{
     dispatch(setLoading())
     signInWithEmailAndPassword(auth,email,password)
     .then((userCredential)=>{
@@ -89,10 +89,11 @@ const signInUser=((dispatch,email,password,username,navigate)=>{
         dispatch(setError(error.message))
         alert(error.message)
     })
-})
+}
 
 
-const resetPassword=((dispatch,email)=>{
+const resetPassword=async(dispatch,email)=>{
+    alert("We are here")
     dispatch(setLoading())
     sendPasswordResetEmail(auth,email)
     .then(()=>{
@@ -102,10 +103,10 @@ const resetPassword=((dispatch,email)=>{
         dispatch(setError(error.message))
         alert(error.message)
     })
-})
+}
 
 
-export {registerUser,signInUser};
+export {registerUser,signInUser,resetPassword};
 
 
 
