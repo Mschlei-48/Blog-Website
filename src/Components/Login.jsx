@@ -23,6 +23,12 @@ function Login(){
     const forgotPasswordNav=(()=>{
         return navigate("forgot-password")
     })
+
+    // const handleLoginNav=(()=>{
+    //     if(stateData.loggedIn===true){
+    //         navigate("/landing-page")
+    //     }
+    // })
     return(
         <div className='login-main-container'>
             <div className='login-form-container'>
@@ -39,7 +45,7 @@ function Login(){
                 <br></br>
                 <a style={{marginLeft:"307px"}} onClick={()=>forgotPasswordNav()}>Forgot password?</a>
                 <br></br>
-                <button className="login-button" onClick={()=>signInUser(dispatch,email,password,"hey")}>Log in</button>
+                <button className="login-button" onClick={()=>signInUser(dispatch,email,password)}>Log in</button>
                 <p style={{marginLeft:"84px"}}>Don't have an account? <a onClick={()=>navRegister()}>Register here</a></p>
             </div>
             <div className='logn-image-container'>

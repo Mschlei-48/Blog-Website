@@ -16,7 +16,7 @@ function Register(){
 
 
     const navLogin=(()=>{
-        return navigate("/")
+        return navigate("/login")
     })
     const handleRegister=(()=>{
         registerUser(dispatch,email,password,username,navigate)

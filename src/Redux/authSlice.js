@@ -8,7 +8,8 @@ const initialState={
     username:"",
     password:"",
     error:null,
-    loading:false
+    loading:false,
+    loggedIn:false
 }
 
 const authSlice=createSlice({
@@ -27,6 +28,7 @@ const authSlice=createSlice({
             state.email=action.payload.email,
             state.password=action.payload.password,
             state.username=action.payload.username
+            state.loggedIn=action.payload.loggedIn
         }
     }
 })
@@ -70,14 +72,15 @@ const registerUser=async (dispatch,email,password,username,navigate)=>{
 
 
 
-const signInUser=async(dispatch,email,password,username,navigate)=>{
+const signInUser=async(dispatch,email,password,username)=>{
     dispatch(setLoading())
     signInWithEmailAndPassword(auth,email,password)
     .then((userCredential)=>{
         const user=userCredential.user
         if(user.emailVerified){
             alert("User signed in suceessfully")
-            dispatch(setUser({"email":email,"password":password}))
+            dispatch(setUser({"email":email,"password":password,"loggedIn":true}))
+            
         }
         else{
             auth.signOut()
@@ -87,7 +90,16 @@ const signInUser=async(dispatch,email,password,username,navigate)=>{
     })
     .catch((error)=>{
         dispatch(setError(error.message))
-        alert(error.message)
+        if(error.message.includes("auth/invalid-email")){
+            alert("Please enter valid email")
+        }
+        else if(error.message.includes("auth/invalid-credential")){
+            alert("Incorrect email or password")
+        }
+        else if(error.message.includes("auth/missing-password")){
+            alert("Please enter password")
+        }
+        // alert(error.message)
     })
 }
 

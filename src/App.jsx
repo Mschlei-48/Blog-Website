@@ -7,7 +7,9 @@ import Register from './Components/Register'
 import {BrowserRouter,Routes,Route} from 'react-router-dom'
 import Layout from './Layout.jsx'
 import ForgotPassword from './Components/ForgotPassword.jsx'
-import resetPasswordEmailSet from './Components/resetPasswordEmailSent.jsx' 
+import ResetPasswordEmailSet from './Components/resetPasswordEmailSent.jsx' 
+import LandingPage from './Components/LandingPage.jsx'
+import Home from './Components/Home.jsx'
 
 
 function App() {
@@ -15,10 +17,12 @@ function App() {
     <BrowserRouter>
     <Routes>
       <Route path='/' element={<Layout/>}>
-      <Route index element={<Login/>}/>
+      <Route index element={<LandingPage/>}/>
       <Route path="register" element={<Register/>}/>
+      <Route path="passwordresetemailsent" element={<ResetPasswordEmailSet/>}/>
       <Route path="forgot-password" element={<ForgotPassword/>}/>
-      <Route path="passwordresetemailsent" element={<resetPasswordEmailSet/>}/>
+      <Route path="login" element={<Login/>}/>
+      <Route path="home" element={<Home/>}/>
       </Route>
     </Routes>
     </BrowserRouter>

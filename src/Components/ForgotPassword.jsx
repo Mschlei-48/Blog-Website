@@ -9,10 +9,12 @@ function ForgotPassword() {
   const dispatch = useDispatch();
 
   const navLogin = () => {
-    return navigate("/");
+    return navigate("/login");
   };
   const navSentEmail=(()=>{
-    return navigate('/passwordresetemailsent')
+    return navigate('/passwordresetemailsent',
+      {"state":email}
+    )
   })
 
   const [email, setEmail] = useState("");
