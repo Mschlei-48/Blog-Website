@@ -10,6 +10,7 @@ import ForgotPassword from './Components/ForgotPassword.jsx'
 import ResetPasswordEmailSet from './Components/resetPasswordEmailSent.jsx' 
 import LandingPage from './Components/LandingPage.jsx'
 import Home from './Components/Home.jsx'
+import Profile from './Components/Profile.jsx'
 
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
       <Route path="forgot-password" element={<ForgotPassword/>}/>
       <Route path="login" element={<Login/>}/>
       <Route path="home" element={<Home/>}/>
+      <Route path="profile" element={<Profile/>}/>
       </Route>
     </Routes>
     </BrowserRouter>

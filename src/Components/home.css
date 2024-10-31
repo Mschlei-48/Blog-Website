@@ -5,17 +5,30 @@
     margin:0;
     background-color:white;
 }
-.home-nav-a{
-    color:black;
-}
-.home-nav-icons{
-    width:35px;
-    height:35px;
-}
-.home-nav-bar{
+
+
+.prfile-dropdown-content{
     display:flex;
-    justify-content:space-between;
-    padding-top:18px;
-    padding-left:3%;
-    padding-right:3%;
+    flex-direction:column;
+    gap:25px;
+    background-color: whitesmoke;
+    width:100%;
+    padding-left:55%;
+    padding-top: 55%;
+    padding-right:85%;
+    padding-bottom:55%;
+    border-radius:5%;
+    /* padding-right: 10px; */
+}
+.prfile-dropdown-content a{
+    font-size:0.8rem;
+    color:rgb(66, 65, 65);
+}
+.prfile-dropdown-content a:hover{
+    color:black;
+    font-size:0.82rem;
+}
+
+.popup{
+   padding-right:55px;
 }

@@ -1,0 +1,14 @@
+.nav-a{
+    color:black;
+}
+.nav-icons{
+    width:35px;
+    height:35px;
+}
+.nav-bar{
+    display:flex;
+    justify-content:space-between;
+    padding-top:18px;
+    padding-left:7%;
+    padding-right:7.7%;
+}
