@@ -1,0 +1,14 @@
+.write-main-content{
+    width:98.75vw;
+    height:100%;
+    background-color:white;
+}
+.write-container{
+    width:100%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+#editorjs{
+    text-align:start;
+}

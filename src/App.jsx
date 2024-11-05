@@ -11,6 +11,7 @@ import ResetPasswordEmailSet from './Components/resetPasswordEmailSent.jsx'
 import LandingPage from './Components/LandingPage.jsx'
 import Home from './Components/Home.jsx'
 import Profile from './Components/Profile.jsx'
+import Write from './Components/Write.jsx'
 
 
 function App() {
@@ -25,6 +26,7 @@ function App() {
       <Route path="login" element={<Login/>}/>
       <Route path="home" element={<Home/>}/>
       <Route path="profile" element={<Profile/>}/>
+      <Route path="write" element={<Write/>}/>
       </Route>
     </Routes>
     </BrowserRouter>

@@ -1,23 +1,12 @@
 import {useState,useEffect,useRef} from 'react'
-import "./home.css"
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch,faPenToSquare,faBell,faUser,faBook,faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
-import { getBlogs } from '../Redux/dataSlice';
-import {useSelector} from 'react-redux'
-import {useDispatch} from 'react-redux';
-import Popup from 'reactjs-popup'
-import {useNavigate} from 'react-router-dom'
-import NavBar from './Navbar';
 import EditorJS from '@editorjs/editorjs';
 import Header from '@editorjs/header'
 import ImageTool from '@editorjs/image'
-import {createReactEditorJS} from 'react-editor-js'
+import NavBar from './Navbar';
+import './write.css'
 
-function Home(){
-    const dispatch=useDispatch()
-    const navigate=useNavigate()
+function Write(){
     const editorInstance=useRef(null);
-    const ReactEditorJS=createReactEditorJS()
     
     const ejInstance=useRef();
 
@@ -27,8 +16,8 @@ function Home(){
             {                          //Here we are starting the first block
                 "type":"header",       //The type of the block is header
                 "data":{               //Pass the data of the block
-                    "text":"This is my awesome editor",  //Then gve the content of the block which in this case is the text
-                    "level":2                            //Define level of the header, i.e., 1 for h1, 2 for h2,etc.
+                    "text":"Start writing...",  //Then gve the content of the block which in this case is the text
+                    "level":1                           //Define level of the header, i.e., 1 for h1, 2 for h2,etc.
                 }
             }
         ]
@@ -37,7 +26,7 @@ function Home(){
             const editor=new EditorJS({
                 holder:"editorjs",
                 onReady:()=>{
-                    ejInstance.current=editor;s
+                    ejInstance.current=editor;
                 },
                 autofocus:true,
                 data:DEFAULT_INITIAL_DATA,
@@ -48,7 +37,7 @@ function Home(){
                 tools:{
                     header:Header,
                     image:ImageTool,
-                }
+                },
             })
         }
 
@@ -61,22 +50,17 @@ function Home(){
                 ejInstance.current=null; //Then we set the ijInstance to null
             }
         },[])
-
-    // useEffect(()=>{
-    //     getBlogs(dispatch)
-    // })
-    // const data=useSelector((state)=>state.db.blogs)
-    
-    // const publishers=data.map((item)=>item.publication);
-    // const uniquePublishers=[...new Set(publishers)];
-    // console.log("Publications:",uniquePublishers)
-
     return(
-        <div className="home-main-content">
+        <div className="write-main-content">
             {<NavBar/>}
-            <div id="categories-container" style={{width:"80vw",height:"50vh"}}>
+            <br></br>
+            <br></br>
+            <div className="write-container">
+                <div id="editorjs" style={{width:"80vw",height:"80vh"}}>
+            </div>
+            
             </div>
         </div>
     )
 }
-export default Home;
+export default Write;
