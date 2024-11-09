@@ -62,10 +62,15 @@ function Home(){
             }
         },[])
 
-    // useEffect(()=>{
-    //     getBlogs(dispatch)
-    // })
-    // const data=useSelector((state)=>state.db.blogs)
+    useEffect(()=>{
+        getBlogs(dispatch)
+    },[])
+    const data=useSelector((state)=>state.db.blogs)
+    const generateNumber=(()=>{
+        return Math.floor(Math.random()*(2998-0+1))+0;
+    })
+
+    console.log(data[0],generateNumber())
     
     // const publishers=data.map((item)=>item.publication);
     // const uniquePublishers=[...new Set(publishers)];
@@ -74,7 +79,11 @@ function Home(){
     return(
         <div className="home-main-content">
             {<NavBar/>}
+            <div className="most-popular-blog-container">
+                <h2>{data[generateNumber()].title}</h2>
+            </div>
             <div id="categories-container" style={{width:"80vw",height:"50vh"}}>
+            <button></button>
             </div>
         </div>
     )
