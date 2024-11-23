@@ -4,6 +4,9 @@
     padding:0;
     margin:0;
     background-color:white;
+    display:flex;
+    flex-direction:column;
+    gap:12%;
 }
 
 
@@ -31,4 +34,42 @@
 
 .popup{
    padding-right:55px;
+}
+
+.most-popular-blog-container{
+    display:flex;
+    flex-direction:row;
+    justify-content:center;
+    align-items:center;
+    gap:3%;
+    width:100%;
+}
+.most-popular-blog-container div{
+    width:35%;
+    height:100%;
+}
+.most-popular-blog-container img{
+    width:100%;
+    height:100%;
+}
+.most-popular-blog-container div:nth-child(1){
+    /* background-color: green; */
+    display:flex;
+    flex-direction:column;
+    justify-content: flex-start;
+    align-items: start;
+    gap:0;
+}
+.most-popular-blog-container div:nth-child(1) p{
+    text-align:justify;
+    font-size:1.1rem;
+    line-height:1.6rem;
+}
+.most-popular-blog-container div:nth-child(1) p:nth-child(1){
+    text-align:justify;
+    font-size:0.8rem;
+    line-height:0;
+}
+.most-popular-blog-container div:nth-child(1) h1{
+    text-align:start;
 }

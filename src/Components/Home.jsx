@@ -12,14 +12,20 @@ import EditorJS from '@editorjs/editorjs';
 import Header from '@editorjs/header'
 import ImageTool from '@editorjs/image'
 import {createReactEditorJS} from 'react-editor-js'
+import {format} from 'date-fns'
+import { getImage } from '../Redux/dataSlice';
 
 function Home(){
     const dispatch=useDispatch()
     const navigate=useNavigate()
     const editorInstance=useRef(null);
     const ReactEditorJS=createReactEditorJS()
+    const [image,setImage]=useState("")
     
     const ejInstance=useRef();
+    // useEffect(()=>{
+    //     getImage("1.png")
+    // })
 
     const DEFAULT_INITIAL_DATA={
         "time":new Date().getTime(), //For every blog we will have the time it was written
@@ -70,7 +76,20 @@ function Home(){
         return Math.floor(Math.random()*(2998-0+1))+0;
     })
 
-    console.log(data[0],generateNumber())
+    const formatDate=(dateString)=>{
+        const date=format(new Date(dateString),'dd MMMM yyyy');
+        return date
+    }
+    useEffect(()=>{
+        const fetchImage=async()=>{
+            const url=await getImage("1.png")
+            setImage(url)
+        }
+        fetchImage()
+    },[])
+
+    console.log("Fetched State:",data)
+    // console.log(data[0],generateNumber())
     
     // const publishers=data.map((item)=>item.publication);
     // const uniquePublishers=[...new Set(publishers)];
@@ -79,8 +98,28 @@ function Home(){
     return(
         <div className="home-main-content">
             {<NavBar/>}
+            <h1>Most Popular</h1>
             <div className="most-popular-blog-container">
-                <h2>{data[generateNumber()].title}</h2>
+                <>
+                {data.length>0?(
+                    <>
+                    <div>
+                    <p>{formatDate(data[0].date)}</p>
+                   <h1>{data[0].title}</h1>
+                   <p>In an age where technology and biology merge, becoming a cyborg blurs the lines between human and machine. It’s not just about augmenting the body with devices; it’s about transforming the way we experience and interact with the world.</p>
+                   <div>
+                        <span style={{padding:"7.5%",backgroundColor:"#445963",color:"white",borderRadius:"60px"}}>MM</span>
+                        <span>Mishi Makade</span>
+                   </div>
+                   </div>
+                   <div>
+                    {image!==""?(<img src={image}/>):(<p>Loading Image...</p>)}
+                   </div>
+                   </>
+                ):
+                (<h2>Loading Blogs...</h2>)
+                } 
+                </>
             </div>
             <div id="categories-container" style={{width:"80vw",height:"50vh"}}>
             <button></button>
