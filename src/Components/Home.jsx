@@ -82,7 +82,7 @@ function Home(){
     }
     useEffect(()=>{
         const fetchImage=async()=>{
-            const url=await getImage("1.png")
+            const url=await getImage(data[4].image)
             setImage(url)
         }
         fetchImage()
@@ -104,12 +104,15 @@ function Home(){
                 {data.length>0?(
                     <>
                     <div>
-                    <p>{formatDate(data[0].date)}</p>
-                   <h1>{data[0].title}</h1>
-                   <p>In an age where technology and biology merge, becoming a cyborg blurs the lines between human and machine. It’s not just about augmenting the body with devices; it’s about transforming the way we experience and interact with the world.</p>
-                   <div>
-                        <span style={{padding:"7.5%",backgroundColor:"#445963",color:"white",borderRadius:"60px"}}>MM</span>
-                        <span>Mishi Makade</span>
+                    <p style={{color:"grey"}}>{formatDate(data[4].date)}</p>
+                   <h2>{data[4].title}</h2>
+                   <p>In an age where technology and biology merge,becoming a cyborg blurs the lines between human and machine. It’s not just about augmenting the body with devices; it’s about transforming the way we experience and interact with the world.</p>
+                   <div style={{lineHeight:"3.5",width:"100%",display:"flex",flexDirection:"row",justifyContent:"flex-start"}}>
+                        <span style={{paddingLeft:"11.5px",paddingRight:"11.5px",backgroundColor:"#445963",color:"white",borderRadius:"100%",fontSize:"0.9rem"}}>MM</span>
+                        <span style={{paddingLeft:"1.5%",fontSize:"0.9rem"}}>Mishi Makade</span>
+                        <span style={{paddingLeft:"3%",fontSize:"0.9rem"}} id="star-profile">⭐</span>
+                        <span style={{paddingLeft:"3%",color:"grey",fontSize:"0.9rem"}} id="heart-likes">❤️52K</span>
+                        <span style={{paddingLeft:"3%",color:"grey",fontSize:"0.9rem"}} id="comments">💬2K</span>
                    </div>
                    </div>
                    <div>

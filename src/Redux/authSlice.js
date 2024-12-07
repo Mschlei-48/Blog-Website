@@ -1,6 +1,8 @@
 import {createSlice} from '@reduxjs/toolkit'
 import {createUserWithEmailAndPassword,signInWithEmailAndPassword,sendEmailVerification,onAuthStateChanged,sendPasswordResetEmail} from 'firebase/auth'
 import {auth} from '../Firebase/config.js'
+import {setDoc,doc,addDoc,collection} from 'firebase/firestore'
+import {db} from '../Firebase/config'
 
 
 const initialState={
@@ -44,7 +46,7 @@ const registerUser=async (dispatch,email,password,username,navigate)=>{
         alert("User Created Sucessfully")
         dispatch(setUser({"email":email,"password":password,"username":username}))
         navigate('/')
-        // Send email verification
+        createProfile(email,username)
         sendEmailVerification(user)
         .then(()=>{
             alert("Email verification sent, please check your email to verify")
@@ -79,6 +81,7 @@ const signInUser=async(dispatch,email,password,username)=>{
         const user=userCredential.user
         if(user.emailVerified){
             alert("User signed in suceessfully")
+            
             dispatch(setUser({"email":email,"password":password,"loggedIn":true}))
             
         }
@@ -105,7 +108,6 @@ const signInUser=async(dispatch,email,password,username)=>{
 
 
 const resetPassword=async(dispatch,email)=>{
-    alert("We are here")
     dispatch(setLoading())
     sendPasswordResetEmail(auth,email)
     .then(()=>{
@@ -117,8 +119,26 @@ const resetPassword=async(dispatch,email)=>{
     })
 }
 
+const createProfile=async(email,username)=>{
+    console.log(email,username)
+    try{
+        await addDoc(collection(db,"Profiles"),{
+            email:email,
+            username:username,
+            firstName:"",
+            lastName:"",
+            bio:""
+        })
+    }
+    catch(error){
+        console.log(error)
+        alert(error)
+    }
 
-export {registerUser,signInUser,resetPassword};
+}
+
+
+export {registerUser,signInUser,resetPassword,createProfile};
 
 
 

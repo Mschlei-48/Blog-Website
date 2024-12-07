@@ -4,9 +4,16 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch,faPenToSquare,faBell,faUser,faBook,faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
 import Popup from 'reactjs-popup'
 import {useNavigate} from 'react-router-dom'
+import {useSelector,useDispatch} from 'react-redux'
+import {setUser} from '../Redux/authSlice.js'
 
 function NavBar(){
     const navigate=useNavigate()
+    const dispatch=useDispatch()
+    const logOut=(()=>{
+        dispatch(setUser({"email":"","password":"","username":"","loggedIn":false}))
+        navigate("/")
+    })
     const handleWriteNav=(()=>{
         return navigate("/write")
     })
@@ -27,7 +34,7 @@ function NavBar(){
             <div className="prfile-dropdown-content">
                 <a onClick={()=>navigate("/profile")}><FontAwesomeIcon icon={faUser} />  Profile</a>
                 <a><FontAwesomeIcon icon={faBook} />  Stories</a>
-                <a onClick={()=>navigate("/login")}><FontAwesomeIcon icon={faRightFromBracket} />  Logout</a>
+                <a onClick={()=>logOut()}><FontAwesomeIcon icon={faRightFromBracket} />  Logout</a>
             </div>
         </Popup>
         </div>

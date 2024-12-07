@@ -6,7 +6,7 @@
     background-color:white;
     display:flex;
     flex-direction:column;
-    gap:12%;
+    gap:8%;
 }
 
 
@@ -64,12 +64,19 @@
     text-align:justify;
     font-size:1.1rem;
     line-height:1.6rem;
+    color:grey;
 }
 .most-popular-blog-container div:nth-child(1) p:nth-child(1){
     text-align:justify;
     font-size:0.8rem;
-    line-height:0;
+    line-height:1.5;
+    
 }
-.most-popular-blog-container div:nth-child(1) h1{
+.most-popular-blog-container div:nth-child(1) h2{
     text-align:start;
+    margin:0;
+    padding:0;
+}
+#star-profile:hover{
+    
 }

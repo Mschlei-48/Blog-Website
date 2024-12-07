@@ -2,7 +2,8 @@ import {useState,useEffect} from 'react'
 import './login.css'
 import {useNavigate} from 'react-router-dom'
 import {useSelector,useDispatch} from 'react-redux'
-import {signInUser} from '../Redux/authSlice.js' 
+import {signInUser} from '../Redux/authSlice.js'
+ 
 
 function Login(){
 
@@ -14,6 +15,11 @@ function Login(){
     const dispatch=useDispatch()
     useEffect(()=>{
         console.log(stateData)
+        const navHomePage=(()=>{
+            if(stateData.loggedIn===true){
+        navigate("/home")}
+        })
+        navHomePage()
     })
     const navigate=useNavigate()
     const navRegister=(()=>{
@@ -23,6 +29,8 @@ function Login(){
     const forgotPasswordNav=(()=>{
         return navigate("forgot-password")
     })
+
+
 
     // const handleLoginNav=(()=>{
     //     if(stateData.loggedIn===true){
