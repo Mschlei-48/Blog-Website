@@ -13,7 +13,7 @@ const initialState={
     FirstName:"",
     LastName:"",
     email:"",
-    bio:""
+    bio:"",
 }
 
 const dataSlice=createSlice({
@@ -172,7 +172,7 @@ export const uploadImage = async (file, email) => {
       const storage = getStorage();
   
       // Create a storage reference using the email as the ID
-      const storageRef = ref(storage, `profileImages/${email}`);
+      const storageRef = ref(storage, `Profile-Pictures/${email}`);
   
       // Upload the file to Firebase Storage
       const snapshot = await uploadBytes(storageRef, file);
@@ -189,3 +189,38 @@ export const uploadImage = async (file, email) => {
       throw error;
     }
   };
+
+  export const getProfilePicture=async(email)=>{
+    const storage=getStorage();
+    const fileRef=ref(storage,`Profile-Pictures/${email}`)
+    try{
+        const downloadURL=await getDownloadURL(fileRef);
+        return downloadURL;
+    }
+    catch(error){
+        if(error.code==="storage/object-not-found"){
+            return null
+        }
+        else{
+            console.log(error)
+        }
+            
+    }
+  }
+
+
+export const pushBlogs=async(email,blogs)=>{
+    const profilesCollection = collection(db, "Profiles");
+    const q = query(profilesCollection, where("email", "==", email));
+    const querySnapshot = await getDocs(q);
+    const docId = querySnapshot.docs[0].id;
+    try{
+        const subcollectionRef=collection(db,"Profiles",docId,"Blogs")
+        const docRef=await addDoc(subcollectionRef,blogs)
+         console.log("Blog addedd successfully")
+    }
+    catch(error){ 
+      console.error("Error adding the blog:",error)    
+    }
+}
+    

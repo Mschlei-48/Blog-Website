@@ -119,23 +119,33 @@ const resetPassword=async(dispatch,email)=>{
     })
 }
 
-const createProfile=async(email,username)=>{
-    console.log(email,username)
-    try{
-        await addDoc(collection(db,"Profiles"),{
-            email:email,
-            username:username,
-            firstName:"",
-            lastName:"",
-            bio:""
-        })
-    }
-    catch(error){
-        console.log(error)
-        alert(error)
-    }
+const createProfile = async (email, username) => {
+    console.log(email, username);
+    try {
+        // Add a new document to the "Profiles" collection
+        const profileRef = await addDoc(collection(db, "Profiles"), {
+            email: email,
+            username: username,
+            firstName: "",
+            lastName: "",
+            bio: ""
+        });
 
-}
+        // Create a "Blogs" collection for the newly added profile
+        const blogsCollectionRef = collection(profileRef, "Blogs");
+        await addDoc(blogsCollectionRef, {
+            title: "Welcome Blog",
+            content: "This is your first blog! Edit or delete it to get started.",
+            createdAt: new Date(),
+        });
+
+        console.log("Profile and Blogs collection created successfully");
+    } catch (error) {
+        console.log(error);
+        alert(error);
+    }
+};
+
 
 
 export {registerUser,signInUser,resetPassword,createProfile};

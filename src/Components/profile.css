@@ -2,6 +2,7 @@
     width:98.5vw;
     min-height:100vh;
     background-color:white;
+    padding-bottom:3%;
     /* overflow:hidden; */
 }
 .profile-content{
@@ -20,7 +21,6 @@
     flex-direction:row;
     justify-content:center;
     gap:20px;
-    /* border:1px solid black; */
 }
 .content{
     width:100%;
@@ -45,7 +45,6 @@
 }
 .info-profile-content label{
     font-size:1rem;
-    /* font-weight:bold; */
     color:grey;
 }
 #bio{
@@ -69,9 +68,10 @@
     justify-content:center;
     align-items:center;  
 }
-#save-profile-changes button{
+#save-profile-changes button,#edit-profile-content button{
     background-color:blue;
     color:white;
+    
     width:10%;
     border-radius:10px;
 }

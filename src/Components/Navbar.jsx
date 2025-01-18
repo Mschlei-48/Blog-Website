@@ -6,13 +6,16 @@ import Popup from 'reactjs-popup'
 import {useNavigate} from 'react-router-dom'
 import {useSelector,useDispatch} from 'react-redux'
 import {setUser} from '../Redux/authSlice.js'
+import {persistor} from '../Redux/store.js'
 
 function NavBar(){
     const navigate=useNavigate()
     const dispatch=useDispatch()
     const logOut=(()=>{
         dispatch(setUser({"email":"","password":"","username":"","loggedIn":false}))
+        persistor.purge()
         navigate("/")
+        persistor.purge()
     })
     const handleWriteNav=(()=>{
         return navigate("/write")
