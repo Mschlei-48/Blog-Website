@@ -14,86 +14,55 @@ import ImageTool from '@editorjs/image'
 import {createReactEditorJS} from 'react-editor-js'
 import {format} from 'date-fns'
 import { getImage } from '../Redux/dataSlice';
+import {fetchBlogs} from "../Redux/dataSlice";
+import { db } from "../Firebase/config";
+import EditorJsParser from 'editorjs-parser';
+import DOMPurify from "dompurify"
+
 
 function Home(){
+
+
+      
     const dispatch=useDispatch()
     const navigate=useNavigate()
-    const editorInstance=useRef(null);
-    const ReactEditorJS=createReactEditorJS()
-    const [image,setImage]=useState("")
-    
-    const ejInstance=useRef();
-    // useEffect(()=>{
-    //     getImage("1.png")
-    // })
+    const dataState = useSelector(state => state.db);
+    // console.log("Blogs are here:", dataState);
 
-    const DEFAULT_INITIAL_DATA={
-        "time":new Date().getTime(), //For every blog we will have the time it was written
-        "blocks":[                     //Define the blocks for the data, the blocks are the individual components of the blog,e.g headers, paragraphs, images,etc.
-            {                          //Here we are starting the first block
-                "type":"header",       //The type of the block is header
-                "data":{               //Pass the data of the block
-                    "text":"This is my awesome editor",  //Then gve the content of the block which in this case is the text
-                    "level":2                            //Define level of the header, i.e., 1 for h1, 2 for h2,etc.
-                }
-            }
-        ]
-    }
-        const initEditor=()=>{
-            const editor=new EditorJS({
-                holder:"editorjs",
-                onReady:()=>{
-                    ejInstance.current=editor;s
-                },
-                autofocus:true,
-                data:DEFAULT_INITIAL_DATA,
-                onChange:async()=>{
-                    let content=await editor.saver.save();
-                    console.log(content)
-                },
-                tools:{
-                    header:Header,
-                    image:ImageTool,
-                }
-            })
-        }
 
-        useEffect(()=>{
-            if(ejInstance.current===null){  //If the editor is not initialized yet, initialise it by calling te function to initialise
-                initEditor();
-            }
-            return()=>{
-                ejInstance?.current?.destroy(); //If the component is refreshed, then the editor content should be destroyed/removed from memory/DOM.
-                ejInstance.current=null; //Then we set the ijInstance to null
-            }
-        },[])
 
     useEffect(()=>{
-        getBlogs(dispatch)
+        fetchBlogs(dispatch,dataState.email)
+        .then((blogs)=>{
+            // console.log("Blogs are Fetched")
+            // console.log(dataState.blogs)
+        })
+        .catch((error)=>{
+            console.log("Error fetching blogs:",error)
+        })
     },[])
-    const data=useSelector((state)=>state.db.blogs)
-    const generateNumber=(()=>{
-        return Math.floor(Math.random()*(2998-0+1))+0;
-    })
+    const data=useSelector((state)=>state.db)
 
+    // const htmlBlogs=editorjsHTML.parse(dataState.blogs)
     const formatDate=(dateString)=>{
         const date=format(new Date(dateString),'dd MMMM yyyy');
         return date
     }
-    useEffect(()=>{
-        const fetchImage=async()=>{
-            const url=await getImage(data[4].image)
-            setImage(url)
-        }
-        fetchImage()
-    },[])
+
 
     console.log("Fetched State:",data)
-    // console.log(data[0],generateNumber())
     
-    // const publishers=data.map((item)=>item.publication);
-    // const uniquePublishers=[...new Set(publishers)];
-    // console.log("Publications:",uniquePublishers)
+    // console.log("Data type is:",data.blogs[0].blocks)
+    
+
+    // Parse the blogs into HTML
+    const parser=new EditorJsParser();
+    let html=""
+    const parsedContent=parser.parse({blocks: data.blogs[0].blocks})
+    html=Array.isArray(parsedContent)?parsedContent.join(""):parsedContent;
+    const finalHTML=DOMPurify.sanitize(html)
+    console.log(typeof(html))
+
 
     return(
         <div className="home-main-content">
@@ -101,23 +70,12 @@ function Home(){
             <h1>Most Popular</h1>
             <div className="most-popular-blog-container">
                 <>
-                {data.length>0?(
+                {html?(
                     <>
-                    <div>
-                    <p style={{color:"grey"}}>{formatDate(data[4].date)}</p>
-                   <h2>{data[4].title}</h2>
-                   <p>In an age where technology and biology merge,becoming a cyborg blurs the lines between human and machine. It’s not just about augmenting the body with devices; it’s about transforming the way we experience and interact with the world.</p>
-                   <div style={{lineHeight:"3.5",width:"100%",display:"flex",flexDirection:"row",justifyContent:"flex-start"}}>
-                        <span style={{paddingLeft:"11.5px",paddingRight:"11.5px",backgroundColor:"#445963",color:"white",borderRadius:"100%",fontSize:"0.9rem"}}>MM</span>
-                        <span style={{paddingLeft:"1.5%",fontSize:"0.9rem"}}>Mishi Makade</span>
-                        <span style={{paddingLeft:"3%",fontSize:"0.9rem"}} id="star-profile">⭐</span>
-                        <span style={{paddingLeft:"3%",color:"grey",fontSize:"0.9rem"}} id="heart-likes">❤️52K</span>
-                        <span style={{paddingLeft:"3%",color:"grey",fontSize:"0.9rem"}} id="comments">💬2K</span>
-                   </div>
-                   </div>
-                   <div>
-                    {image!==""?(<img src={image}/>):(<p>Loading Image...</p>)}
-                   </div>
+                    <div
+                            className="blog-content"
+                            dangerouslySetInnerHTML={{ __html: finalHTML }}
+                            />
                    </>
                 ):
                 (<h2>Loading Blogs...</h2>)

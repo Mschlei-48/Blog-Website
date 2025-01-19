@@ -30,13 +30,6 @@ function Login(){
         return navigate("forgot-password")
     })
 
-
-
-    // const handleLoginNav=(()=>{
-    //     if(stateData.loggedIn===true){
-    //         navigate("/landing-page")
-    //     }
-    // })
     return(
         <div className='login-main-container'>
             <div className='login-form-container'>
@@ -59,7 +52,6 @@ function Login(){
             <div className='logn-image-container'>
                 <img src="../src/assets/back-login.jpg" alt="No Image to Display" className="login-side-image"/>
             </div>
-
         </div>
     )
 }

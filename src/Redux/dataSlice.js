@@ -223,4 +223,39 @@ export const pushBlogs=async(email,blogs)=>{
       console.error("Error adding the blog:",error)    
     }
 }
+
+export const fetchBlogs=async(dispatch,email)=>{
+    dispatch(setLoading())
+    try{
+    // Get the ID of the user profile by querying the firestore using the email
+    const profilesCollection = collection(db, "Profiles");
+    const q = query(profilesCollection, where("email", "==", email));
+    const querySnapshot = await getDocs(q);
+
+    if(querySnapshot.empty){
+        console.log("No matching document found for the email:",email)
+        return [];
+    }
+
+    const docId=querySnapshot.docs[0].id
+    
+    // Fetch the blogs using the ID obtained above
+    const blogsSubcollectionRef=collection(db,"Profiles",docId,"Blogs");
+    const blogsSnapshot=await getDocs(blogsSubcollectionRef);
+    const blogs=blogsSnapshot.docs.map((doc)=>({
+        id:doc.id,
+        ...doc.data(),
+    }))
+    console.log("Blogs fetched successfully")
+    dispatch(getData(blogs))
+    return blogs
+    }
+    catch(error){
+        console.log("Error fetching blogs:",error)
+        return [];
+    }
+
+
+
+}
     
