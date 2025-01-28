@@ -5,6 +5,7 @@ import {resetPassword} from "../Redux/authSlice.js";
 import { useDispatch } from "react-redux";
 
 function ForgotPassword() {
+  
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -99,3 +100,12 @@ function ForgotPassword() {
 }
 
 export default ForgotPassword;
+
+
+
+
+
+
+
+
+

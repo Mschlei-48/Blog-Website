@@ -12,6 +12,7 @@ import LandingPage from './Components/LandingPage.jsx'
 import Home from './Components/Home.jsx'
 import Profile from './Components/Profile.jsx'
 import Write from './Components/Write.jsx'
+import {GoogleLogin} from '@react-oauth/google'
 
 
 

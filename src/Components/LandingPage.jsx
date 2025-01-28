@@ -1,15 +1,23 @@
 import {useState} from 'react'
 import './landing-page.css'
 import {useNavigate} from 'react-router-dom'
+import Login from './Login.jsx'
+import Popup from 'reactjs-popup'
 
 function LandingPage(){
     const navigate=useNavigate()
+    const [read,setRead]=useState(false)
     return(
         <div className="landing-page-main-content">
             <div className="landing-page-nav-bar">
+            <Popup trigger={read}>
+                <div>
+                  <h1>Hi</h1>
+                </div>
+            </Popup>
                 <h2 style={{fontWeight:"45px",fontFamily:"Roboto",fontSize:"35px"}}>Infinity</h2>
                 <div className="landing-page-nav-list">
-                    <button style={{color:"white"}} id="start-reading" onClick={()=>navigate("/home")}>Start Reading</button>
+                    <button style={{color:"white"}} id="start-reading" onClick={()=>setRead(true)}>Start Reading</button>
                     <button style={{backgroundColor:"blue",color:"white"}} id="sign-in" onClick={()=>navigate("/login")}>Sign in</button>
                     <button style={{backgroundColor:"black",color:"white"}} id="start-up" onClick={()=>navigate("/register")}>Sign up</button>
                 </div>

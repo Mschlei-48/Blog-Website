@@ -1,8 +1,9 @@
 import {createSlice} from '@reduxjs/toolkit'
 import {createUserWithEmailAndPassword,signInWithEmailAndPassword,sendEmailVerification,onAuthStateChanged,sendPasswordResetEmail} from 'firebase/auth'
 import {auth} from '../Firebase/config.js'
-import {setDoc,doc,addDoc,collection} from 'firebase/firestore'
+import {getDocs,collection,doc,addDoc,query,limit,where,updateDoc} from 'firebase/firestore'
 import {db} from '../Firebase/config'
+import { getDownloadURL,getStorage, uploadBytes } from 'firebase/storage'
 
 
 const initialState={
@@ -28,9 +29,8 @@ const authSlice=createSlice({
         },
         setUser(state,action){
             state.email=action.payload.email,
-            state.password=action.payload.password,
             state.username=action.payload.username
-            state.loggedIn=action.payload.loggedIn
+            state.loggedIn=true
         }
     }
 })
@@ -38,13 +38,23 @@ const authSlice=createSlice({
 export const {setLoading,setError,setUser}=authSlice.actions;
 export default authSlice.reducer;
 
+const googleLogin=async(email,name,dispatch,navigate)=>{
+    const profiles=collection(db,"Profiles");
+    const q=query(profiles,where("email","==",email));
+    const results=await getDocs(q)
+    if(results.empty){
+        createProfile(email,name)
+        dispatch(setUser({"email":email,"username":name}))
+    }
+}
+
 const registerUser=async (dispatch,email,password,username,navigate)=>{
     dispatch(setLoading())
     createUserWithEmailAndPassword(auth,email,password)
     .then((userCredential)=>{
         const user=userCredential.user;
         alert("User Created Sucessfully")
-        dispatch(setUser({"email":email,"password":password,"username":username}))
+        dispatch(setUser({"email":email,"username":username}))
         navigate('/')
         createProfile(email,username)
         sendEmailVerification(user)
@@ -148,7 +158,7 @@ const createProfile = async (email, username) => {
 
 
 
-export {registerUser,signInUser,resetPassword,createProfile};
+export {registerUser,signInUser,resetPassword,createProfile,googleLogin};
 
 
 
