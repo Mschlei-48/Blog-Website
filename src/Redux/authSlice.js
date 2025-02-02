@@ -4,6 +4,7 @@ import {auth} from '../Firebase/config.js'
 import {getDocs,collection,doc,addDoc,query,limit,where,updateDoc} from 'firebase/firestore'
 import {db} from '../Firebase/config'
 import { getDownloadURL,getStorage, uploadBytes } from 'firebase/storage'
+import {setProfile} from './dataSlice.js'
 
 
 const initialState={
@@ -29,8 +30,7 @@ const authSlice=createSlice({
         },
         setUser(state,action){
             state.email=action.payload.email,
-            state.username=action.payload.username
-            state.loggedIn=true
+            state.loggedIn=action.payload.loggedIn
         }
     }
 })
@@ -45,6 +45,11 @@ const googleLogin=async(email,name,dispatch,navigate)=>{
     if(results.empty){
         createProfile(email,name)
         dispatch(setUser({"email":email,"username":name}))
+        dispatch(setProfile({"email":email,"username":name,"bio":""}))
+    }
+    else{
+        dispatch(setUser({"email":email,"username":name}))
+        dispatch(setProfile({"email":email,"username":name,"bio":""}))
     }
 }
 
@@ -84,7 +89,7 @@ const registerUser=async (dispatch,email,password,username,navigate)=>{
 
 
 
-const signInUser=async(dispatch,email,password,username)=>{
+const signInUser=async(dispatch,email,password)=>{
     dispatch(setLoading())
     signInWithEmailAndPassword(auth,email,password)
     .then((userCredential)=>{
@@ -92,7 +97,7 @@ const signInUser=async(dispatch,email,password,username)=>{
         if(user.emailVerified){
             alert("User signed in suceessfully")
             
-            dispatch(setUser({"email":email,"password":password,"loggedIn":true}))
+            dispatch(setUser({"email":email,"loggedIn":true}))
             
         }
         else{
@@ -136,8 +141,8 @@ const createProfile = async (email, username) => {
         const profileRef = await addDoc(collection(db, "Profiles"), {
             email: email,
             username: username,
-            firstName: "",
-            lastName: "",
+            // firstName: "",
+            // lastName: "",
             bio: ""
         });
 

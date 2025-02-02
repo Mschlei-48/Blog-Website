@@ -10,8 +10,6 @@ const initialState={
     error:null,
     loading:false,
     username:"",
-    FirstName:"",
-    LastName:"",
     email:"",
     bio:"",
 }
@@ -22,6 +20,11 @@ const dataSlice=createSlice({
     reducers:{
         getData:(state,action)=>{
         state.blogs=action.payload
+        state.loading=false
+        state.error=null
+        },
+        stopLoading:(state,action)=>{
+            state.loading=false;
         },
         setError:(state,action)=>{
             state.error=action.payload
@@ -33,15 +36,13 @@ const dataSlice=createSlice({
         },
         setProfile:(state,action)=>{
             state.username=action.payload.username,
-            state.FirstName=action.payload.FirstName,
-            state.LastName=action.payload.LastName,
             state.email=action.payload.email,
             state.bio=action.payload.bio
         }
     }
 })
 
-export const {getData,setError,setLoading,setProfile}=dataSlice.actions;
+export const {getData,setError,setLoading,setProfile,stopLoading}=dataSlice.actions;
 export default dataSlice.reducer;
 
 
@@ -94,8 +95,6 @@ export const fetchProfile=async(email,dispatch)=>{
         });
         // console.log("Profile Data:",profileData)
         dispatch(setProfile({username:profileData[0].username,
-            FirstName:profileData[0].firstName,
-            LastName:profileData[0].lastName,
             email:profileData[0].email,
             bio:profileData[0].bio}))
         return profileData;
@@ -120,8 +119,6 @@ export const updateProfile = async (email, username, firstName, lastName, bio) =
         await updateDoc(profileRef, {
           email: email,
           username: username,
-          firstName: firstName,
-          lastName: lastName,
           bio: bio,
         });
         alert("Profile updated successfully");
@@ -210,10 +207,13 @@ export const uploadImage = async (file, email) => {
 
 
 export const pushBlogs=async(email,blogs)=>{
+    console.log("Email:",email)
     const profilesCollection = collection(db, "Profiles");
     const q = query(profilesCollection, where("email", "==", email));
     const querySnapshot = await getDocs(q);
     const docId = querySnapshot.docs[0].id;
+    
+    // console.log(docId)
     try{
         const subcollectionRef=collection(db,"Profiles",docId,"Blogs")
         const docRef=await addDoc(subcollectionRef,blogs)
@@ -246,9 +246,16 @@ export const fetchBlogs=async(dispatch,email)=>{
         id:doc.id,
         ...doc.data(),
     }))
-    console.log("Blogs fetched successfully")
-    dispatch(getData(blogs))
-    return blogs
+    console.log("Blogs fetched successfully",blogs.slice(1))
+    dispatch(stopLoading())
+    if(blogs.length>1){
+        dispatch(getData(blogs.slice(1)))
+    }
+    else{
+        dispatch(stopLoading())
+    }
+    
+    return blogs.slice(1)
     }
     catch(error){
         console.log("Error fetching blogs:",error)

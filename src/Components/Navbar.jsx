@@ -6,13 +6,17 @@ import Popup from 'reactjs-popup'
 import {useNavigate} from 'react-router-dom'
 import {useSelector,useDispatch} from 'react-redux'
 import {setUser} from '../Redux/authSlice.js'
+import {setProfile,getData} from '../Redux/dataSlice.js'
 import {persistor} from '../Redux/store.js'
 
 function NavBar(){
     const navigate=useNavigate()
     const dispatch=useDispatch()
+
     const logOut=(()=>{
-        dispatch(setUser({"email":"","password":"","username":"","loggedIn":false}))
+        dispatch(setUser({"email":"","username":"","loggedIn":false}))
+        dispatch(setProfile({"username":"","email":"","bio":""}))
+        dispatch(getData([]))
         persistor.purge()
         navigate("/")
         persistor.purge()
@@ -37,7 +41,7 @@ function NavBar(){
             <div className="prfile-dropdown-content">
                 <a onClick={()=>navigate("/profile")}><FontAwesomeIcon icon={faUser} />  Profile</a>
                 <a><FontAwesomeIcon icon={faBook} />  Stories</a>
-                <a onClick={()=>logOut()}><FontAwesomeIcon icon={faRightFromBracket} />  Logout</a>
+                <a onClick={()=>logOut()}><FontAwesomeIcon icon={faRightFromBracket} />Logout</a>
             </div>
         </Popup>
         </div>

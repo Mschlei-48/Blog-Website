@@ -144,11 +144,13 @@ import { storage } from "../Firebase/config";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { useDispatch, useSelector } from "react-redux";
 import { getData,pushBlogs } from "../Redux/dataSlice";
+import { useNavigate } from "react-router-dom";
 
 function Write() {
-    const dataState = useSelector(state => state.db);
+    const dataState = useSelector((state) => state.db);
     console.log("Blogs are here:", dataState);
     const dispatch = useDispatch();
+    const navigate=useNavigate()
     const editorInstance = useRef(null);
 
     const ejInstance = useRef();
@@ -254,6 +256,7 @@ function Write() {
         pushBlogs(dataState.email,dataState.blogs)
         .then(()=>{
             alert("Blog added successfully")
+            navigate("/home")
         })
         .catch((error)=>{
             console.log("Error adding blog:",error)
