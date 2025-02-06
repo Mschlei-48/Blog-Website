@@ -25,13 +25,14 @@ import { fetchBlogs } from "../Redux/dataSlice";
 import { db } from "../Firebase/config";
 import EditorJsParser from "editorjs-parser";
 import DOMPurify from "dompurify";
+import Footer from './Footer.jsx'
+import {useLocation} from 'react-router-dom'
 
 function Home() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  // const dataState = useSelector((state) => state.db);
   const data = useSelector((state) => state.db);
-  // console.log("Blogs are here:", data);
+
 
   useEffect(() => {
     fetchBlogs(dispatch, data.email)
@@ -56,10 +57,8 @@ function Home() {
   const handleParseDiv=(blog)=>{
     const image=blog.blocks.filter((element)=>element.type==="image")
     const header=blog.blocks.filter((element)=>element.type==="header")
-    // const par=blog.blocks.filter((element)=>element.type==="paragraph")
     console.log("Testing",image[0])
     console.log("Testing 2",header[0])
-    // console.log("Testing 3",par[0].data.text.slice(0,101))
     const first_image=image[0]
     const first_header=header[0]
     const time=blog.time
@@ -67,6 +66,21 @@ function Home() {
     const finalHTML = DOMPurify.sanitize(parsedContent);
     console.log("Testing final:",finalHTML)
     return finalHTML
+  }
+
+  const displayContent=(blog)=>{
+    // console.log("Blog ID",blog.blog.id)
+    // console.log("Blog Time",blog.time)
+    const blogs=data.blogs.filter((content)=>content.id===blog.blog.id)
+    console.log("Found Blog",blogs)
+    const time=blogs[0].time
+    console.log("Blocks",blogs[0].blocks)
+    const parsedContent = parser.parse({ blocks: blogs[0].blocks});
+    const finalHTML = DOMPurify.sanitize(parsedContent);
+    console.log("Found HTML",finalHTML)
+    navigate("/read",{
+      state:{html:finalHTML,times:time}
+    })
   }
 
   // Parse the blogs into HTML
@@ -80,21 +94,12 @@ function Home() {
     }
 
     if (data.blogs.length > 0) {
-        // const parser = new EditorJsParser();
-        // const parsedContent = parser.parse({ blocks: data.blogs[1].blocks});
-        // html = Array.isArray(parsedContent)
-        //   ? parsedContent.join("")
-        //   : parsedContent;
-        // const finalHTML = DOMPurify.sanitize(html);
-        // console.log(typeof html);
-      
       if (data.loading === false) {
         return (
           <>
-          
             <div className="blog-display">
             {data.blogs.slice(1).map(blog=>(
-              <div className="blog-content">
+              <div className="blog-content" onClick={()=>displayContent({blog})}>
               <div
               key={blog.id}
               style={{width:"100%",gap:"10px"}}
@@ -111,16 +116,7 @@ function Home() {
   }
   };
 
-  // console.log(html)
-  {
-    /* Check if the html exist and the loading is done. Then also check if the loader is still loading. */
-  }
-  {
-    /* If it is still loading say "Loading Blogs" */
-  }
-  {
-    /* But if it is not and the html is empty then show "No Blogs to Display" */
-  }
+
   return (
     <div className="home-main-content">
       {<NavBar />}
@@ -133,6 +129,7 @@ function Home() {
       <div id="categories-container" style={{ width: "80vw", height: "50vh" }}>
         <button></button>
       </div>
+      <Footer/>
     </div>
   );
 }

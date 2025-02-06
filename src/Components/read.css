@@ -1,0 +1,15 @@
+.read-main-content{
+    width:100%;
+    height:90%;
+    background-color:whitesmoke;
+    display:flex;
+    flex-direction:column;
+    gap:1%;
+    
+}
+hr{
+    border:0.5px solid rgb(230, 229, 229);
+}
+h1{
+    margin:0;
+}

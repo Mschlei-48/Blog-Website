@@ -13,6 +13,7 @@ import Home from './Components/Home.jsx'
 import Profile from './Components/Profile.jsx'
 import Write from './Components/Write.jsx'
 import {GoogleLogin} from '@react-oauth/google'
+import Read from './Components/Read.jsx'
 
 
 
@@ -29,6 +30,7 @@ function App() {
       <Route path="home" element={<Home/>}/>
       <Route path="profile" element={<Profile/>}/>
       <Route path="write" element={<Write/>}/>
+      <Route path="read" element={<Read/>}/>
       </Route>
     </Routes>
     </BrowserRouter>
