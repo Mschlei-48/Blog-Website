@@ -216,7 +216,7 @@ export const pushBlogs=async(email,blogs)=>{
     // console.log(docId)
     try{
         const subcollectionRef=collection(db,"Profiles",docId,"Blogs")
-        const docRef=await addDoc(subcollectionRef,blogs)
+        const docR4ef=await addDoc(subcollectionRef,blogs)
          console.log("Blog addedd successfully")
     }
     catch(error){ 

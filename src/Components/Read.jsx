@@ -8,6 +8,9 @@ import {
   faUser,
   faBook,
   faRightFromBracket,
+  faHeart,
+  faComment,
+  faShareFromSquare,
 } from "@fortawesome/free-solid-svg-icons";
 import { getBlogs } from "../Redux/dataSlice.js";
 import { useSelector } from "react-redux";
@@ -25,24 +28,162 @@ import { fetchBlogs } from "../Redux/dataSlice.js";
 import { db } from "../Firebase/config.js";
 import EditorJsParser from "editorjs-parser";
 import DOMPurify from "dompurify";
-import Footer from './Footer.jsx'
-import {useLocation} from 'react-router-dom'
-import './read.css'
+import Footer from "./Footer.jsx";
+import { useLocation } from "react-router-dom";
+import "./read.css";
+import {
+  fetchProfile,
+  updateProfile,
+  uploadImage,
+  getProfilePicture,
+} from "../Redux/dataSlice.js";
 
-function Read(){
+function Read() {
+  // Next Stets
+  // Make the Blog display nicely
+  // Add floow buttom
+  // Add a share button
+  // Add comments and likes button
+  // Ensure taht when a person follows you they can see your posts on their timeline
+  const location = useLocation();
+  const [profilePic, setProfilePic] = useState("");
 
-  const location=useLocation()
-  console.log(location.state)
-    return(
-        <div className="read-main-content">
-          <NavBar/>
-          <div>
-            <hr></hr>
-          </div>
-          
-          <div dangerouslySetInnerHTML={{__html:location.state.html}} style={{width:"50%",height:"50%"}}/>
+  const data = useSelector((state) => state.db);
+  console.log("Data:", data);
+  console.log(location.state);
+
+  const formatDate = (dateString) => {
+    const date = format(new Date(dateString), "dd MMMM yyyy");
+    return date;
+  };
+
+  useEffect(() => {
+    getProfilePicture(data.email)
+      .then((url) => {
+        if (url) {
+          setProfilePic(url);
+        } else {
+          console.log("Url does not exist");
+        }
+      })
+      .catch((error) =>
+        console.error("error checking for profile picture:", error)
+      );
+  }, []);
+
+  console.log(profilePic);
+
+  return (
+    <div className="read-main-content">
+      <NavBar />
+      <div>
+        <hr></hr>
+      </div>
+      <br></br>
+      <br></br>
+      <div
+        style={{
+          width: "100%",
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "center",
+          alignItems: "start",
+          textAlign: "start",
+          gap: "0%",
+        }}
+      >
+        <div style={{ width: "8%" }}>
+          <img
+            src={profilePic}
+            alt="No Image to Display"
+            style={{
+              width: "80px",
+              height: "80px",
+              objectFit: "cover",
+              borderRadius: "50%",
+            }}
+          />
         </div>
-    )
+        <div style={{ width: "10%", marginTop: "1.5%" }}>
+          <h3 style={{ margin: "0" }}>{data.username}</h3>
+          <p style={{ marginTop: "5%", color: "grey" }}>5 mins read</p>
+        </div>
+        <div
+          style={{
+            width: "10%",
+            textAlign: "start",
+            marginTop: "1.6%",
+            marginLeft: "1.5%",
+          }}
+        >
+          <p style={{ margin: "0", color: "grey", cursor: "pointer" }}>
+            Follow
+          </p>
+          <p style={{ marginTop: "7.5%", color: "grey" }}>
+            {formatDate(location.state.times)}
+          </p>
+        </div>
+      </div>
+      <br></br>
+      <br></br>
+      <div
+        className="actions"
+        style={{
+          width: "100%",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <div style={{ width: "55%" }}>
+          <hr></hr>
+        </div>
+        <div style={{ display: "flex", flexDirection: "row",gap:"25px" }}>
+          <div style={{display:"flex",flexDirection:"row",justifyContent:"center",alignItems:"center",gap:"3px"}}>
+            <FontAwesomeIcon icon={faHeart} className="icon"/>
+            <p className="count">0</p>
+          </div>
+          <div style={{display:"flex",flexDirection:"row",justifyContent:"center",alignItems:"center",gap:"3px"}}>
+            <FontAwesomeIcon icon={faComment} className="icon"/>
+            <p className="count">0</p>
+          </div>
+          <div style={{display:"flex",justifyContent:"center",alignItems:"center"}}>
+            <FontAwesomeIcon icon={faShareFromSquare} className="icon"/>
+          </div>
+        </div>
+        <div style={{ width: "55%" }}>
+          <hr></hr>
+        </div>
+      </div>
+      <div className="read-content">
+        <div
+          className="read-html"
+          dangerouslySetInnerHTML={{ __html: location.state.html }}
+          style={{ width: "50%", height: "50%" }}
+        />
+      </div>
+      <br></br>
+      <br></br>
+      <br></br>
+      <br></br>
+      <br></br>
+      <br></br>
+      <br></br>
+      <br></br>
+      <br></br>
+      <br></br>
+      <br></br>
+      <br></br>
+      <br></br>
+      <div>
+        <hr></hr>
+      </div>
+      <div>
+        <Footer />
+      </div>
+    </div>
+  );
 }
 
 export default Read;

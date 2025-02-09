@@ -148,12 +148,23 @@ const createProfile = async (email, username) => {
 
         // Create a "Blogs" collection for the newly added profile
         const blogsCollectionRef = collection(profileRef, "Blogs");
-        await addDoc(blogsCollectionRef, {
+        const blogDocRef=await addDoc(blogsCollectionRef, {
             title: "Welcome Blog",
             content: "This is your first blog! Edit or delete it to get started.",
             createdAt: new Date(),
         });
 
+        const likesCollection=collection(blogDocRef,"Likes");
+        await addDoc(likesCollection,{
+            count:0,
+            names:["Mishi Makade"]
+        })
+
+        const followersCollection=collection(profileRef,"Followers");
+        await addDoc(followersCollection,{
+            count:0,
+            names:["Mishi Makade"]
+        });
         console.log("Profile and Blogs collection created successfully");
     } catch (error) {
         console.log(error);

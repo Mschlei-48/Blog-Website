@@ -32,7 +32,12 @@ function Home() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const data = useSelector((state) => state.db);
-
+  const blogs=data.blogs.map((blog)=>blog.blocks)
+  console.log("Testing Blogs",blogs)
+  const find_data=blogs.slice(1).map((blog)=>blog)
+  const handleSearch=(searchTerm)=>{
+    
+  }
 
   useEffect(() => {
     fetchBlogs(dispatch, data.email)
@@ -51,33 +56,24 @@ function Home() {
     return date;
   };
 
-  console.log("Fetched State:", data);
   const parser = new EditorJsParser();
 
   const handleParseDiv=(blog)=>{
     const image=blog.blocks.filter((element)=>element.type==="image")
     const header=blog.blocks.filter((element)=>element.type==="header")
-    console.log("Testing",image[0])
-    console.log("Testing 2",header[0])
     const first_image=image[0]
     const first_header=header[0]
     const time=blog.time
     const parsedContent = parser.parse({ blocks: [first_image,first_header]});
     const finalHTML = DOMPurify.sanitize(parsedContent);
-    console.log("Testing final:",finalHTML)
     return finalHTML
   }
 
   const displayContent=(blog)=>{
-    // console.log("Blog ID",blog.blog.id)
-    // console.log("Blog Time",blog.time)
     const blogs=data.blogs.filter((content)=>content.id===blog.blog.id)
-    console.log("Found Blog",blogs)
     const time=blogs[0].time
-    console.log("Blocks",blogs[0].blocks)
     const parsedContent = parser.parse({ blocks: blogs[0].blocks});
     const finalHTML = DOMPurify.sanitize(parsedContent);
-    console.log("Found HTML",finalHTML)
     navigate("/read",{
       state:{html:finalHTML,times:time}
     })
@@ -120,6 +116,9 @@ function Home() {
   return (
     <div className="home-main-content">
       {<NavBar />}
+      <div>
+        <hr></hr>
+      </div>
       <h1>Most Popular</h1>
       <div>
           {
@@ -128,6 +127,9 @@ function Home() {
       </div>
       <div id="categories-container" style={{ width: "80vw", height: "50vh" }}>
         <button></button>
+      </div>
+      <div>
+        <hr></hr>
       </div>
       <Footer/>
     </div>

@@ -46,7 +46,9 @@ function NavBar() {
             fontSize: "2.7rem",
             fontFamily: "Roboto",
             fontWeight: "bold",
+            cursor:"pointer"
           }}
+          onClick={()=>navigate("/home")}
         >
           Infinity
         </span>
