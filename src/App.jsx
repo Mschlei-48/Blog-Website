@@ -14,6 +14,7 @@ import Profile from './Components/Profile.jsx'
 import Write from './Components/Write.jsx'
 import {GoogleLogin} from '@react-oauth/google'
 import Read from './Components/Read.jsx'
+import Stories from './Components/Stories.jsx'
 
 
 
@@ -31,6 +32,7 @@ function App() {
       <Route path="profile" element={<Profile/>}/>
       <Route path="write" element={<Write/>}/>
       <Route path="read" element={<Read/>}/>
+      <Route path="stories" element={<Stories/>}/>
       </Route>
     </Routes>
     </BrowserRouter>

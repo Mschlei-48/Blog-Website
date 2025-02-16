@@ -261,8 +261,65 @@ export const fetchBlogs=async(dispatch,email)=>{
         console.log("Error fetching blogs:",error)
         return [];
     }
+}
 
 
+export const Follow=async(email,followerEmail)=>{
+    const profilesCollection=collection(db,"Profiles");
+    const q=query(profilesCollection,where("email","==",email));
+    const querySnapshot=await getDocs(q)
+    if(querySnapshot.empty){
+        console.log("No user with that email exists")
+    }
+    else{
+        const docId=querySnapshot.docs[0].id;
+
+        try{
+            const subcollectionRef=collection(db,"Profiles",docId,"Followers")
+            const followerRef=await addDoc(subcollectionRef,{
+                email:followerEmail
+            })
+            await updateDoc(subcollectionRef,{
+                count:increment(1)
+            })
+            alert(`${followerEmail} is now following ${email}`);
+        }
+        catch(error){
+            console.error(`Error Following the use ${email}`)
+        }
+    }
 
 }
+
+export const HomeBlogs=async(userEmail)=>{
+    try{
+        const profilesCollection=collection(db,"Profiles")
+        const profileQuery=query(profilesCollection,where("email","!=",userEmail))
+        const profilesSnapshot=await getDocs(profilesCollection)
+
+        let blogs=[]
+
+        for(const doc of profilesSnapshot.docs){
+            const profileId=doc.id
+
+            const blogsCollection=collection(db,"Profiles",profileId,"Blogs");
+            const blogsSnapshot=await getDocs(blogsCollection);
+
+            blogsSnapshot.forEach(blogDoc=>{
+                blogs.push({
+                    id:blogDoc.id,
+                    ...blogDoc.data(),
+                    author:doc.data().email
+                });
+            });
+        }
+        console.log("Fetched Blogs",blogs);
+        return blogs
+    }
+    catch(error){
+        console.log("Error fetching blogs",error)
+        return []
+    }
+}
+
     

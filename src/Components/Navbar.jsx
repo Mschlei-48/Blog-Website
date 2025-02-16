@@ -95,7 +95,7 @@ function NavBar() {
             <a onClick={() => navigate("/profile")}>
               <FontAwesomeIcon icon={faUser} /> Profile
             </a>
-            <a>
+            <a onClick={()=>navigate("/stories")}>
               <FontAwesomeIcon icon={faBook} /> Stories
             </a>
             <a onClick={() => logOut()}>
