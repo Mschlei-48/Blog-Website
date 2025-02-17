@@ -26,6 +26,8 @@ import { format } from "date-fns";
 import { getImage } from "../Redux/dataSlice.js";
 import { fetchBlogs } from "../Redux/dataSlice.js";
 import { db } from "../Firebase/config.js";
+import {Follow} from "../Redux/dataSlice.js";
+import {fetchProfileRead} from "../Redux/dataSlice.js";
 import EditorJsParser from "editorjs-parser";
 import DOMPurify from "dompurify";
 import Footer from "./Footer.jsx";
@@ -47,18 +49,30 @@ function Read() {
   // Ensure taht when a person follows you they can see your posts on their timeline
   const location = useLocation();
   const [profilePic, setProfilePic] = useState("");
+  const [username,setUsername]=useState('')
+  const dispatch=useDispatch()
 
   const data = useSelector((state) => state.db);
   console.log("Data:", data);
-  console.log(location.state);
+  console.log("State is:",location.state);
 
   const formatDate = (dateString) => {
     const date = format(new Date(dateString), "dd MMMM yyyy");
     return date;
   };
 
+  useEffect(()=>{
+    fetchProfileRead(location.state.email,dispatch)
+    .then((name)=>{
+      setUsername(name)
+    })
+    .catch((error)=>{
+      console.log("Error getting the username:",error)
+    })
+  })
+
   useEffect(() => {
-    getProfilePicture(data.email)
+    getProfilePicture(location.state.email)
       .then((url) => {
         if (url) {
           setProfilePic(url);
@@ -71,7 +85,18 @@ function Read() {
       );
   }, []);
 
+  const handleFollow=()=>{
+    Follow(data.email,location.state.email,data.username)
+    .then(()=>{
+      alert(`Successfully followed ${data.username}`)
+    })
+    .catch(()=>{
+      console.log("Error following user",error)
+    })
+  }
+
   console.log(profilePic);
+
 
   return (
     <div className="read-main-content">
@@ -105,7 +130,7 @@ function Read() {
           />
         </div>
         <div style={{ width: "10%", marginTop: "1.5%" }}>
-          <h3 style={{ margin: "0" }}>{data.username}</h3>
+          <h3 style={{ margin: "0" }}>{username}</h3>
           <p style={{ marginTop: "5%", color: "grey" }}>5 mins read</p>
         </div>
         <div
@@ -116,7 +141,7 @@ function Read() {
             marginLeft: "1.5%",
           }}
         >
-          <p style={{ margin: "0", color: "grey", cursor: "pointer" }}>
+          <p style={{ margin: "0", color: "grey", cursor: "pointer" }} onClick={()=>handleFollow()}>
             Follow
           </p>
           <p style={{ marginTop: "7.5%", color: "grey" }}>

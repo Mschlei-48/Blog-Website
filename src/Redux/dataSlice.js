@@ -1,5 +1,5 @@
 import {createSlice} from '@reduxjs/toolkit'
-import {getDocs,collection,doc,addDoc,query,limit,where,updateDoc} from 'firebase/firestore'
+import {getDocs,collection,doc,addDoc,query,limit,where,updateDoc,increment,arrayUnion} from 'firebase/firestore'
 import {db} from '../Firebase/config'
 import {storage} from '../Firebase/config'
 import { ref } from 'firebase/storage'
@@ -30,7 +30,7 @@ const dataSlice=createSlice({
             state.error=action.payload
             state.loading=false
         },
-        setLoading:(state,action)=>{
+        setLoading:(state)=>{
             state.loading=true
             state.error=null
         },
@@ -98,6 +98,27 @@ export const fetchProfile=async(email,dispatch)=>{
             email:profileData[0].email,
             bio:profileData[0].bio}))
         return profileData;
+    }
+    catch(error){
+        console.log(error)
+    }
+}
+
+export const fetchProfileRead=async(email,dispatch)=>{
+    const profileCollection=collection(db,"Profiles")
+    try{
+        const q=query(profileCollection,where("email","==",email));
+        const querySnapShot=await getDocs(q)
+
+        const profileData=[];
+        querySnapShot.forEach((doc)=>{
+            profileData.push({...doc.data()})
+        });
+        // console.log("Profile Data:",profileData)
+        // dispatch(setProfile({username:profileData[0].username,
+        //     email:profileData[0].email,
+        //     bio:profileData[0].bio}))
+        return profileData[0].username;
     }
     catch(error){
         console.log(error)
@@ -246,16 +267,20 @@ export const fetchBlogs=async(dispatch,email)=>{
         id:doc.id,
         ...doc.data(),
     }))
-    console.log("Blogs fetched successfully",blogs.slice(1))
+    console.log("Blogs fetched successfully",blogs)
     dispatch(stopLoading())
     if(blogs.length>1){
-        dispatch(getData(blogs.slice(1)))
+        // dispatch(getData(blogs.slice(1)))
+        dispatch(getData(blogs))
+
     }
     else{
+        dispatch(getData(blogs)) //Introduced this new line
         dispatch(stopLoading())
     }
     
-    return blogs.slice(1)
+    // return blogs.slice(1)
+    return blogs
     }
     catch(error){
         console.log("Error fetching blogs:",error)
@@ -264,34 +289,46 @@ export const fetchBlogs=async(dispatch,email)=>{
 }
 
 
-export const Follow=async(email,followerEmail)=>{
-    const profilesCollection=collection(db,"Profiles");
-    const q=query(profilesCollection,where("email","==",email));
-    const querySnapshot=await getDocs(q)
-    if(querySnapshot.empty){
-        console.log("No user with that email exists")
-    }
-    else{
-        const docId=querySnapshot.docs[0].id;
+export const Follow = async (email, followerEmail, userName) => {
+    const profilesCollection = collection(db, "Profiles");
+    const profileQuery = query(profilesCollection, where("email", "==", email));
+    const profileSnapshot = await getDocs(profileQuery);
 
-        try{
-            const subcollectionRef=collection(db,"Profiles",docId,"Followers")
-            const followerRef=await addDoc(subcollectionRef,{
-                email:followerEmail
-            })
-            await updateDoc(subcollectionRef,{
-                count:increment(1)
-            })
-            alert(`${followerEmail} is now following ${email}`);
-        }
-        catch(error){
-            console.error(`Error Following the use ${email}`)
-        }
+    if (profileSnapshot.empty) {
+        console.log("No user with that email exists");
+        return;
     }
 
-}
+    const docId = profileSnapshot.docs[0].id; // Profile ID
 
-export const HomeBlogs=async(userEmail)=>{
+    try {
+        // Get the "Followers" subcollection
+        const followersCollectionRef = collection(db, "Profiles", docId, "Followers");
+        const followersSnapshot = await getDocs(followersCollectionRef);
+
+        if (followersSnapshot.empty) {
+            console.error("No followers document exists.");
+            return;
+        }
+
+        // Get the ID of the single document inside "Followers"
+        const followerDocId = followersSnapshot.docs[0].id;
+        const followerDocRef = doc(db, "Profiles", docId, "Followers", followerDocId);
+
+        // Update the document (increment count & add new follower)
+        await updateDoc(followerDocRef, {
+            count: increment(1),
+            followers: arrayUnion({ email: followerEmail, username: userName })
+        });
+
+        alert(`${followerEmail} is now following ${email}`);
+    } catch (error) {
+        console.error(`Error following user ${email}`, error);
+    }
+};
+
+export const HomeBlogs=async(userEmail,dispatch)=>{
+    dispatch(setLoading())
     try{
         const profilesCollection=collection(db,"Profiles")
         const profileQuery=query(profilesCollection,where("email","!=",userEmail))
@@ -313,11 +350,13 @@ export const HomeBlogs=async(userEmail)=>{
                 });
             });
         }
+        dispatch(stopLoading())
         console.log("Fetched Blogs",blogs);
         return blogs
     }
     catch(error){
         console.log("Error fetching blogs",error)
+        dispatch(setError(error))
         return []
     }
 }

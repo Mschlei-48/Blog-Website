@@ -32,19 +32,18 @@ function Stories() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const data = useSelector((state) => state.db);
-  console.log(data)
-  const handleSearch=(searchTerm)=>{
-    
-  }
+  
+
 
   useEffect(() => {
     fetchBlogs(dispatch, data.email)
       .then((blogs) => {
+        console.log("Our email:",data.email)
       })
       .catch((error) => {
         console.log("Error fetching blogs:", error);
       });
-  }, []);
+  },[]);
   
 
 
@@ -76,7 +75,7 @@ function Stories() {
       state:{html:finalHTML,times:time}
     })
   }
-
+  console.log("Vlogs are here:",data)
   // Parse the blogs into HTML
   let html = "";
   const handleParsing = (data) => {
