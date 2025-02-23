@@ -72,7 +72,7 @@ function Home() {
     const parsedContent = parser.parse({ blocks: blogs.blog.blocks });
     const finalHTML = DOMPurify.sanitize(parsedContent);
     navigate("/read", {
-      state: { html: finalHTML, times: time,email:blog.blog.author },
+      state: { html: finalHTML, times: time,email:blog.blog.author,blogID:blog.blog.id},
     });
   };
   // Parse the blogs into HTML

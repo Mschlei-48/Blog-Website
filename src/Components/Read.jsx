@@ -39,6 +39,7 @@ import {
   uploadImage,
   getProfilePicture,
   Like,
+  fetchLikesData,
 } from "../Redux/dataSlice.js";
 
 function Read() {
@@ -107,8 +108,26 @@ function Read() {
   }
 
   const handleLike=()=>{
-    
+    Like(location.state.email,location.state.blogID,data.email,data.username)
+    .then(()=>{
+      alert(`${data.username} Successfully Likes Blog`)
+    })
+    .catch((error)=>{
+      alert("Error Liking Blog")
+    })
   }
+  const [likesCount,setLikesCount]=useState(0)
+
+  useEffect(()=>{
+      fetchLikesData(location.state.email,location.state.blogID)
+      .then((likesData)=>{
+        setLikesCount(likesData.count)
+      })
+      .catch((error)=>{
+        console.log("Error fetching likes count",error)
+      })
+  },[])
+
 
   console.log(profilePic);
 
@@ -188,8 +207,8 @@ function Read() {
         </div>
         <div style={{ display: "flex", flexDirection: "row",gap:"25px" }}>
           <div style={{display:"flex",flexDirection:"row",justifyContent:"center",alignItems:"center",gap:"3px"}}>
-            <FontAwesomeIcon icon={faHeart} className="icon"/>
-            <p className="count">0</p>
+            <FontAwesomeIcon icon={faHeart} className="icon" onClick={()=>handleLike()}/>
+           <p className="count">{likesCount}</p>
           </div>
           <div style={{display:"flex",flexDirection:"row",justifyContent:"center",alignItems:"center",gap:"3px"}}>
             <FontAwesomeIcon icon={faComment} className="icon"/>

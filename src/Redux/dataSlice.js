@@ -227,23 +227,103 @@ export const uploadImage = async (file, email) => {
   }
 
 
-export const pushBlogs=async(email,blogs)=>{
-    console.log("Email:",email)
+// export const pushBlogs=async(email,blogs)=>{
+//     console.log("Email:",email)
+//     const profilesCollection = collection(db, "Profiles");
+//     const q = query(profilesCollection, where("email", "==", email));
+//     const querySnapshot = await getDocs(q);
+//     const docId = querySnapshot.docs[0].id;
+    
+//     // console.log(docId)
+//     try{
+//         const subcollectionRef=collection(db,"Profiles",docId,"Blogs")
+//         const docR4ef=await addDoc(subcollectionRef,blogs)
+//          console.log("Blog addedd successfully")
+//     }
+//     catch(error){ 
+//       console.error("Error adding the blog:",error)    
+//     }
+// }
+export const pushBlogs = async (email, blogs) => {
+    console.log("Email:", email);
+
+    // Get the Profiles collection reference
     const profilesCollection = collection(db, "Profiles");
+    
+    // Query to find the profile document that matches the email
     const q = query(profilesCollection, where("email", "==", email));
     const querySnapshot = await getDocs(q);
-    const docId = querySnapshot.docs[0].id;
+
+    if (querySnapshot.empty) {
+        console.error("No profile found for this email.");
+        return;
+    }
+
+    const profileRef = querySnapshot.docs[0]; // Get the first matching profile
+    const docId = profileRef.id; // Get the profile document ID
+
+    try {
+        // Reference to the Blogs subcollection inside the user's profile
+        const subcollectionRef = collection(db, "Profiles", docId, "Blogs");
+        
+        // Add the new blog document
+        const blogDocRef = await addDoc(subcollectionRef, blogs);
+        console.log("Blog added successfully!");
+
+        // Create a Likes subcollection for the blog
+        const likesCollectionRef = collection(db, "Profiles", docId, "Blogs", blogDocRef.id, "Likes");
+
+        // Add an initial likes document with default values
+        await addDoc(likesCollectionRef, {
+            count: 0,
+            names: ["Mishi Makade"]
+        });
+
+        console.log("Likes subcollection initialized for the blog!");
+    } catch (error) {
+        console.error("Error adding the blog:", error);
+    }
+};
+
+export const fetchLikesData = async (email, blogId) => {
+    console.log("Fetching likes for blog:", blogId);
+
+    // Get the Profiles collection reference
+    const profilesCollection = collection(db, "Profiles");
     
-    // console.log(docId)
-    try{
-        const subcollectionRef=collection(db,"Profiles",docId,"Blogs")
-        const docR4ef=await addDoc(subcollectionRef,blogs)
-         console.log("Blog addedd successfully")
+    // Query to find the profile document that matches the email
+    const q = query(profilesCollection, where("email", "==", email));
+    const querySnapshot = await getDocs(q);
+
+    if (querySnapshot.empty) {
+        console.error("No profile found for this email.");
+        return;
     }
-    catch(error){ 
-      console.error("Error adding the blog:",error)    
+
+    const profileRef = querySnapshot.docs[0]; // Get the first matching profile
+    const docId = profileRef.id; // Get the profile document ID
+
+    try {
+        // Reference to the Likes subcollection inside the specific blog
+        const likesCollectionRef = collection(db, "Profiles", docId, "Blogs", blogId, "Likes");
+
+        // Get the Likes document (assuming there is only one document)
+        const likesSnapshot = await getDocs(likesCollectionRef);
+
+        if (likesSnapshot.empty) {
+            console.log("No likes data found for this blog.");
+            return { count: 0, names: [] };
+        }
+
+        const likesData = likesSnapshot.docs[0].data(); // Get the first document's data
+        console.log("Likes Data:", likesData);
+
+        return likesData; // Returns { count: 0, names: ["Mishi Makade"] }
+    } catch (error) {
+        console.error("Error fetching likes data:", error);
+        return { count: 0, names: [] };
     }
-}
+};
 
 export const fetchBlogs=async(dispatch,email)=>{
     dispatch(setLoading())

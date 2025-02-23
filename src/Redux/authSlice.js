@@ -154,11 +154,11 @@ const createProfile = async (email, username) => {
             createdAt: new Date(),
         });
 
-        const likesCollectionRef = collection(db, "Profiles", profileRef.id, "Blogs", blogDocRef.id, "Likes");
-        await addDoc(likesCollectionRef, {
-            count: 0,
-            names: ["Mishi Makade"]
-        });
+        // const likesCollectionRef = collection(db, "Profiles", profileRef.id, "Blogs", blogDocRef.id, "Likes");
+        // await addDoc(likesCollectionRef, {
+        //     count: 0,
+        //     names: ["Mishi Makade"]
+        // });
 
         const followersCollection=collection(profileRef,"Followers");
         await addDoc(followersCollection,{
