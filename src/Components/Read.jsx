@@ -24,7 +24,7 @@ import ImageTool from "@editorjs/image";
 import { createReactEditorJS } from "react-editor-js";
 import { format } from "date-fns";
 import { getImage } from "../Redux/dataSlice.js";
-import { fetchBlogs } from "../Redux/dataSlice.js";
+import { fetchBlogs,isFollowing } from "../Redux/dataSlice.js";
 import { db } from "../Firebase/config.js";
 import {Follow} from "../Redux/dataSlice.js";
 import {fetchProfileRead} from "../Redux/dataSlice.js";
@@ -38,6 +38,7 @@ import {
   updateProfile,
   uploadImage,
   getProfilePicture,
+  Like,
 } from "../Redux/dataSlice.js";
 
 function Read() {
@@ -51,6 +52,7 @@ function Read() {
   const [profilePic, setProfilePic] = useState("");
   const [username,setUsername]=useState('')
   const dispatch=useDispatch()
+  const [Follows,setFollows]=useState(false)
 
   const data = useSelector((state) => state.db);
   console.log("Data:", data);
@@ -60,7 +62,7 @@ function Read() {
     const date = format(new Date(dateString), "dd MMMM yyyy");
     return date;
   };
-
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   useEffect(()=>{
     fetchProfileRead(location.state.email,dispatch)
     .then((name)=>{
@@ -71,6 +73,15 @@ function Read() {
     })
   })
 
+  useEffect(()=>{
+    isFollowing(location.state.email,data.email)
+    .then((isFollow)=>{
+      setFollows(isFollow)
+    })
+    .catch((error)=>{
+      console.log("Error checking following:",error)
+    })
+  })
   useEffect(() => {
     getProfilePicture(location.state.email)
       .then((url) => {
@@ -93,6 +104,10 @@ function Read() {
     .catch(()=>{
       console.log("Error following user",error)
     })
+  }
+
+  const handleLike=()=>{
+    
   }
 
   console.log(profilePic);
@@ -141,9 +156,16 @@ function Read() {
             marginLeft: "1.5%",
           }}
         >
-          <p style={{ margin: "0", color: "grey", cursor: "pointer" }} onClick={()=>handleFollow()}>
-            Follow
-          </p>
+        {Follows? (
+                    <p style={{ margin: "0", color: "grey", cursor: "pointer" }} onClick={()=>handleFollow()}>
+                    Following
+                  </p>
+        ):(
+                    <p style={{ margin: "0", color: "grey", cursor: "pointer" }} onClick={()=>handleFollow()}>
+                    Follow
+                  </p>
+        )}
+
           <p style={{ marginTop: "7.5%", color: "grey" }}>
             {formatDate(location.state.times)}
           </p>

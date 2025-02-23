@@ -1,5 +1,5 @@
 import {createSlice} from '@reduxjs/toolkit'
-import {getDocs,collection,doc,addDoc,query,limit,where,updateDoc,increment,arrayUnion} from 'firebase/firestore'
+import {getDocs,collection,doc,addDoc,query,limit,where,updateDoc,increment,arrayUnion,getDoc} from 'firebase/firestore'
 import {db} from '../Firebase/config'
 import {storage} from '../Firebase/config'
 import { ref } from 'firebase/storage'
@@ -289,7 +289,7 @@ export const fetchBlogs=async(dispatch,email)=>{
 }
 
 
-export const Follow = async (email, followerEmail, userName) => {
+export const Follow = async (followerEmail,email,userName) => {
     const profilesCollection = collection(db, "Profiles");
     const profileQuery = query(profilesCollection, where("email", "==", email));
     const profileSnapshot = await getDocs(profileQuery);
@@ -326,12 +326,90 @@ export const Follow = async (email, followerEmail, userName) => {
         console.error(`Error following user ${email}`, error);
     }
 };
+export const Like = async (profileEmail, blogId, likerEmail, likerUsername) => {
+    // Step 1: Find the profile ID based on the email
+    const profilesCollection = collection(db, "Profiles");
+    const profileQuery = query(profilesCollection, where("email", "==", profileEmail));
+    const profileSnapshot = await getDocs(profileQuery);
+
+    if (profileSnapshot.empty) {
+        console.log("No user with that email exists");
+        return;
+    }
+
+    const profileId = profileSnapshot.docs[0].id; // Profile ID
+
+    try {
+        // Step 2: Get the "Likes" subcollection of the specific blog
+        const likesCollectionRef = collection(db, "Profiles", profileId, "Blogs", blogId, "Likes");
+        const likesSnapshot = await getDocs(likesCollectionRef);
+
+        if (likesSnapshot.empty) {
+            console.error("No likes document exists.");
+            return;
+        }
+
+        // Step 3: Get the ID of the single document inside "Likes"
+        const likesDocId = likesSnapshot.docs[0].id;
+        const likesDocRef = doc(db, "Profiles", profileId, "Blogs", blogId, "Likes", likesDocId);
+
+        // Step 4: Update the document (increment count & add new liker)
+        await updateDoc(likesDocRef, {
+            count: increment(1),
+            names: arrayUnion({ email: likerEmail, username: likerUsername })
+        });
+
+        alert(`${likerUsername} liked this blog!`);
+    } catch (error) {
+        console.error(`Error liking blog ${blogId}`, error);
+    }
+};
+
+export const isFollowing = async (email, followerEmail) => {
+    const profilesCollection = collection(db, "Profiles");
+    const profileQuery = query(profilesCollection, where("email", "==", email));
+    const profileSnapshot = await getDocs(profileQuery);
+
+
+    const docId = profileSnapshot.docs[0].id; // Profile ID
+
+    try {
+        // Get the "Followers" subcollection
+        const followersCollectionRef = collection(db, "Profiles", docId, "Followers");
+        const followersSnapshot = await getDocs(followersCollectionRef);
+
+        if (followersSnapshot.empty) {
+            console.error("No followers document exists.");
+            return false;
+        }
+
+        // Get the ID of the single document inside "Followers"
+        const followerDocId = followersSnapshot.docs[0].id;
+        const followerDocRef = doc(db, "Profiles", docId, "Followers", followerDocId);
+
+        // Get the document data
+        const followerDoc = await getDoc(followerDocRef);
+        // if (!followerDoc.exists()) {
+        //     console.log("Followers document does not exist");
+        //     return false;
+        // }
+
+        const followersList = followerDoc.data().followers || [];
+
+        // Check if the email exists in the followers array
+        return followersList.some(follower => follower.email === followerEmail);
+
+    } catch (error) {
+        console.error(`Error checking follow status for ${email}`, error);
+        return false;
+    }
+};
 
 export const HomeBlogs=async(userEmail,dispatch)=>{
     dispatch(setLoading())
     try{
         const profilesCollection=collection(db,"Profiles")
-        const profileQuery=query(profilesCollection,where("email","!=",userEmail))
+        const profileQuery=query(profilesCollection,where("email","!==",userEmail))
         const profilesSnapshot=await getDocs(profilesCollection)
 
         let blogs=[]
@@ -343,11 +421,13 @@ export const HomeBlogs=async(userEmail,dispatch)=>{
             const blogsSnapshot=await getDocs(blogsCollection);
 
             blogsSnapshot.forEach(blogDoc=>{
-                blogs.push({
-                    id:blogDoc.id,
-                    ...blogDoc.data(),
-                    author:doc.data().email
-                });
+                if(doc.data().email!==userEmail){
+                    blogs.push({
+                        id:blogDoc.id,
+                        ...blogDoc.data(),
+                        author:doc.data().email
+                    });
+                }
             });
         }
         dispatch(stopLoading())
