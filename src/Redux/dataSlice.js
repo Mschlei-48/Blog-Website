@@ -609,5 +609,38 @@ export const pushComment = async (email, blogId, comment, username,commentorEmai
     }
   };
 
+  export const getCommentCount = async (email, blogId) => {
+    console.log("Fetching comment count for blog:", blogId);
+  
+    // Get the Profiles collection reference
+    const profilesCollection = collection(db, "Profiles");
+  
+    // Query to find the profile document that matches the email
+    const q = query(profilesCollection, where("email", "==", email));
+    const querySnapshot = await getDocs(q);
+  
+    if (querySnapshot.empty) {
+      console.error("No profile found for this email.");
+      return 0; // No profile found
+    }
+  
+    const profileRef = querySnapshot.docs[0]; // Get the first matching profile
+    const docId = profileRef.id; // Get the profile document ID
+  
+    try {
+      // Reference to the Comments subcollection inside the specific blog
+      const commentsCollectionRef = collection(db, "Profiles", docId, "Blogs", blogId, "Comments");
+  
+      // Get all comments
+      const commentsSnapshot = await getDocs(commentsCollectionRef);
+  
+      // Return the count of documents in the comments collection
+      return commentsSnapshot.size; // This gives the count of documents in the collection
+    } catch (error) {
+      console.error("Error fetching comment count:", error);
+      return 0; // In case of an error, return 0
+    }
+  };
+
 
     

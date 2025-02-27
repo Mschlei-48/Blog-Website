@@ -11,6 +11,7 @@ import {
   faHeart,
   faComment,
   faShareFromSquare,
+  faThumbsUp,
 } from "@fortawesome/free-solid-svg-icons";
 import { getBlogs } from "../Redux/dataSlice.js";
 import { useSelector } from "react-redux";
@@ -42,6 +43,8 @@ import {
   fetchLikesData,
   fetchComments,
   pushComment,
+  getCommentCount,
+
 } from "../Redux/dataSlice.js";
 
 function Read() {
@@ -218,6 +221,11 @@ function Read() {
       <div style={{width:"100%",textAlign:"start"}}>
       <p style={{marginLeft:"4%",textAlign:"start"}}>{comment.comment}</p>
     </div>
+    <div style={{width:"100%",display:"flex",flexDirection:"row",gap:"5%"}}>
+    <FontAwesomeIcon icon={faThumbsUp} style={{color:"grey"}}/>
+    <FontAwesomeIcon icon={faComment} style={{color:"grey"}}/>
+    <a style={{color:"grey"}}>Reply</a>
+    </div>
     <div style={{ width: "100%" }}>
           <hr></hr>
         </div>
@@ -288,6 +296,16 @@ function Read() {
     }
     }
 
+    const [commentCount,setCommentsCount]=useState(0)
+    useEffect(()=>{
+      getCommentCount(location.state.email,location.state.blogID)
+      .then((count)=>{
+        setCommentsCount(count)
+      })
+      .catch((error)=>{
+        console.log("Error fetching counts",error)
+      })
+    },[location.state.email,location.state.blogID])
 
   return (
     <div className="read-main-content">
@@ -395,7 +413,7 @@ function Read() {
             }}
           >
             <FontAwesomeIcon icon={faComment} className="icon" />
-            <p className="count">0</p>
+            <p className="count">{commentCount}</p>
           </div>
           <div
             style={{
@@ -453,7 +471,6 @@ function Read() {
         }}
         onChange={(event) => setNewComment(event.target.value)}
       ></textarea>
-      
       <br></br>
       <br></br>
       <button
