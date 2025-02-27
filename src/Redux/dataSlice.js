@@ -1,5 +1,5 @@
 import {createSlice} from '@reduxjs/toolkit'
-import {getDocs,collection,doc,addDoc,query,limit,where,updateDoc,increment,arrayUnion,getDoc} from 'firebase/firestore'
+import {getDocs,collection,doc,addDoc,query,limit,where,updateDoc,increment,arrayUnion,getDoc,serverTimestamp} from 'firebase/firestore'
 import {db} from '../Firebase/config'
 import {storage} from '../Firebase/config'
 import { ref } from 'firebase/storage'
@@ -572,6 +572,42 @@ export const fetchComments = async (email, blogId) => {
         return [];
     }
 };
+
+export const pushComment = async (email, blogId, comment, username,commentorEmail) => {
+    console.log(`Pushing comment: "${comment}" by ${username} on blog ${blogId}`);
+  
+    // Get the Profiles collection reference
+    const profilesCollection = collection(db, "Profiles");
+  
+    // Query to find the profile document that matches the email
+    const q = query(profilesCollection, where("email", "==", email));
+    const querySnapshot = await getDocs(q);
+  
+    if (querySnapshot.empty) {
+      console.error("No profile found for this email.");
+      return;
+    }
+  
+    const profileRef = querySnapshot.docs[0]; // Get the first matching profile
+    const docId = profileRef.id; // Get the profile document ID
+  
+    try {
+      // Reference to the Comments subcollection inside the specific blog
+      const commentsCollectionRef = collection(db, "Profiles", docId, "Blogs", blogId, "Comments");
+  
+      // Push the comment to the Comments subcollection
+      await addDoc(commentsCollectionRef, {
+        comment: comment,
+        username: username,
+        timestamp: serverTimestamp(),
+        email:commentorEmail, // Timestamp when comment was created
+      });
+  
+      console.log(`Comment by ${username} added successfully`);
+    } catch (error) {
+      console.error("Error adding comment:", error);
+    }
+  };
 
 
     

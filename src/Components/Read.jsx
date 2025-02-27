@@ -41,6 +41,7 @@ import {
   Like,
   fetchLikesData,
   fetchComments,
+  pushComment,
 } from "../Redux/dataSlice.js";
 
 function Read() {
@@ -160,6 +161,7 @@ function Read() {
   };
 
   const formatCommentDate = (timestamp) => {
+    
     const date = new Date(timestamp.seconds * 1000); // Convert seconds to milliseconds
     return format(date, "dd MMMM yyyy"); // Format to "23 February 2025"
   };
@@ -216,6 +218,9 @@ function Read() {
       <div style={{width:"100%",textAlign:"start"}}>
       <p style={{marginLeft:"4%",textAlign:"start"}}>{comment.comment}</p>
     </div>
+    <div style={{ width: "100%" }}>
+          <hr></hr>
+        </div>
     </>
       ))}
       </div>
@@ -265,10 +270,24 @@ function Read() {
       });
   }, []);
 
-  console.log(
-    "Testing",
-    comments.map((comment) => comment.email)
-  );
+
+
+  const [newComment,setNewComment]=useState("")
+  const pushComments=()=>{
+    if(newComment!==""){
+      pushComment(location.state.email, location.state.blogID,newComment,data.username,data.email)
+      .then(()=>{
+        alert("Comment posted successfully")
+      })
+      .catch((error)=>{
+        console.log("Error posting comment",error)
+      })
+    }
+    else{
+      alert("Please write something")
+    }
+    }
+
 
   return (
     <div className="read-main-content">
@@ -419,18 +438,36 @@ function Read() {
           alignItems: "center",
         }}
       >
-        <div>
-          <textarea
-            placeholder="What is on your mind?"
-            style={{
-              width: "52%",
-              paddingBottom: "5%",
-              paddingLeft: "2%",
-              border: "none",
-              outline: "none",
-            }}
-          ></textarea>
-        </div>
+    <form onSubmit={(event) => {
+      event.preventDefault(); // This will stop the page refresh
+      pushComments(); // This will trigger your function
+    }}>
+      <textarea
+        placeholder="What is on your mind?"
+        style={{
+          width: "52%",
+          paddingBottom: "5%",
+          paddingLeft: "2%",
+          border: "none",
+          outline: "none",
+        }}
+        onChange={(event) => setNewComment(event.target.value)}
+      ></textarea>
+      
+      <br></br>
+      <br></br>
+      <button
+        style={{
+          color: "white",
+          backgroundColor: "green",
+          width: "10%",
+          borderRadius: "20px",
+        }}
+        type="submit"
+      >
+        Post
+      </button>
+    </form>
       </div>
       <div
         style={{
