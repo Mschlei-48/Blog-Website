@@ -280,6 +280,15 @@ export const pushBlogs = async (email, blogs) => {
         });
 
         console.log("Likes subcollection initialized for the blog!");
+        const commentsCollectionRef = collection(db, "Profiles", docId, "Blogs", blogDocRef.id, "Comments");
+
+        // Add an initial document (optional)
+        await addDoc(commentsCollectionRef, {
+            username: "Admin",
+            email: email,
+            comment: "Welcome to the comments section!",
+            timestamp: new Date()
+        });
     } catch (error) {
         console.error("Error adding the blog:", error);
     }
@@ -520,5 +529,49 @@ export const HomeBlogs=async(userEmail,dispatch)=>{
         return []
     }
 }
+
+export const fetchComments = async (email, blogId) => {
+    console.log("Fetching comments for blog:", blogId);
+
+    // Get the Profiles collection reference
+    const profilesCollection = collection(db, "Profiles");
+
+    // Query to find the profile document that matches the email
+    const q = query(profilesCollection, where("email", "==", email));
+    const querySnapshot = await getDocs(q);
+
+    if (querySnapshot.empty) {
+        console.error("No profile found for this email.");
+        return [];
+    }
+
+    const profileRef = querySnapshot.docs[0]; // Get the first matching profile
+    const docId = profileRef.id; // Get the profile document ID
+
+    try {
+        // Reference to the Comments subcollection inside the specific blog
+        const commentsCollectionRef = collection(db, "Profiles", docId, "Blogs", blogId, "Comments");
+
+        // Get all comments
+        const commentsSnapshot = await getDocs(commentsCollectionRef);
+
+        if (commentsSnapshot.empty) {
+            console.log("No comments found for this blog.");
+            return [];
+        }
+
+        const commentsData = commentsSnapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data()
+        }));
+
+        console.log("Comments Data:", commentsData);
+        return commentsData;
+    } catch (error) {
+        console.error("Error fetching comments:", error);
+        return [];
+    }
+};
+
 
     
